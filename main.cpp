@@ -1,5 +1,6 @@
 #include "UserDatabase.h"
 #include "User.h"
+#include "MovieDatabase.h"
 #include "Movie.h"
 #include <iostream>
 #include <string>
@@ -58,6 +59,47 @@ int main()
 //            }
         }
 	}
+    
+    MovieDatabase mb;
+    if (!mb.load("movies.txt"))  // In skeleton, load always return false
+    {
+        cout << "Failed to load user data file " << "movies.txt" << "!" << endl;
+        return 1;
+    }
+    
+    for (int i = 0 ;i < 5; i++)
+    {
+        cout << "Enter movieID (or quit): ";
+        string movie_id;
+        getline(cin, movie_id);
+        if (movie_id == "quit")
+            return 0;
+        Movie* m = mb.get_movie_from_id(movie_id);
+        if (m == nullptr)
+            cout << "No movie in the database has that movie id" << endl;
+        else
+        {
+            cout << "Found " << m->get_title() << endl;
+            cout << "Release year: " << m-> get_release_year();
+            vector<string>movie_dir =  m->get_directors();
+            for (int i = 0; i< movie_dir.size(); i++)
+           {
+               cout << movie_dir[i] << ",";
+           }
+            vector<string>movie_act =  m->get_actors();
+            for (int i = 0; i< movie_act.size(); i++)
+           {
+               cout << movie_act[i] << ",";
+           }
+            vector<string>movie_genres =  m->get_genres();
+            for (int i = 0; i< movie_genres.size(); i++)
+            {
+                cout << movie_genres[i] << ",";
+            }
+            
+            cout << "Rating: " << m->get_rating();
+        }
+    }
     
     vector<string> a (5, "hello");
 
