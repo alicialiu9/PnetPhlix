@@ -4,8 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream> // CHECK !!!
-
-
+#include <iostream>
 using namespace std;
 
 UserDatabase::UserDatabase()
@@ -15,44 +14,45 @@ UserDatabase::UserDatabase()
 
 bool UserDatabase::load(const string& filename)
 {
-    // use getline
+    ifstream infile(filename);    // infile is a name of our choosing
+    if (!infile )              
+    {
+        cerr << "Error: Cannot open data.txt!" << endl;
+        return false;
+    }
     
-    std::ifstream file(filename);
-       if (!file.is_open()) {
-           return false;
-       }
-
     string line;
     string name;
     string email;
+    int num_movies;
     std::vector<std::string> watch_history;
     
-    
-//       while (getline(input, line)) {
-//          stringstream ss(line);
-//          string name, email;
-//           int num_movies;
-//           ss >> name >> email >> num_movies;
-//           if (!email.empty()) {
-//               User user(name, email);
-//               for (int i = 0; i < num_movies; i++) {
-//                   std::string movie_id;
-//                   ss >> movie_id;
-//                   user.add_movie(movie_id);
-//               }
-//               m_users.insert(email, user);
-//           }
-//       }
-    
-    User* user = new User(name, email, watch_history);
-    m_user_database.insert(email, user);
-//
-//       file.close();
-//       return true;
-    
-    
-    
-    return false;  // Replace this line with correct code.
+   while (getline(infile, line)) {
+       
+       if ( ! infile)
+       {
+           cerr << "End of file when trying to read a string" << endl;
+           break;
+       }
+       if (line.empty())
+       {
+           continue;
+       }
+       name = line;
+       getline(infile, email);
+       infile >> num_movies;
+       infile.ignore(10000, '\n');
+       while (getline(infile, line) && !(line.empty()))
+       {
+           watch_history.push_back(line);
+       }
+       User* user = new User(name, email, watch_history);
+       m_users.push_back(user);
+       m_user_database.insert(email, user);
+       watch_history.clear();
+
+    }
+    return true;
 }
 
 User* UserDatabase::get_user_from_email(const string& email) const
@@ -63,4 +63,12 @@ User* UserDatabase::get_user_from_email(const string& email) const
         return (it.get_value());
     }
     return nullptr;
+}
+
+UserDatabase::~UserDatabase()
+{
+    for (vector<User*>::iterator it = m_users.begin(); it != m_users.end();it++)
+    {
+        delete *it;
+    }
 }
