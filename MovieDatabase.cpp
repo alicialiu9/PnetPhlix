@@ -1,8 +1,6 @@
 #include "MovieDatabase.h"
 #include "Movie.h"
 
-#include <string>
-#include <vector>
 #include <fstream>
 #include <iostream>
 using namespace std;
@@ -10,6 +8,23 @@ using namespace std;
 MovieDatabase::MovieDatabase()
 {
     // Replace this line with correct code.
+}
+
+void load_list(string list, vector<string>& v){
+    string temp;
+    for (int i = 0; i < list.size(); i++)
+    {
+        if (list[i] != ',')
+            temp += list[i];
+        
+        else
+        {
+            v.push_back(temp);
+            temp = "";
+        }
+    }
+    // add last one in list
+    v.push_back(temp);
 }
 
 bool MovieDatabase::load(const string& filename)
@@ -29,7 +44,7 @@ bool MovieDatabase::load(const string& filename)
     vector<string> directors;
     vector<string> actors;
     vector<string> genres;
-    int rating;
+    float rating;
     
    while (getline(infile, line)) {
        
@@ -51,61 +66,43 @@ bool MovieDatabase::load(const string& filename)
        string unique_dir;
        getline(infile, director_list); // director list is now dir1, dir2, dir3
        
-       for (int i = 0; i < director_list.size(); i++)
-       {
-           if (director_list[i] != ',')
-               unique_dir += director_list[i];
-           
-           else
-           {
-               directors.push_back(unique_dir);
-               unique_dir = "";
-           }
-       }
-       // add last one in list 
-       directors.push_back(unique_dir);
+       load_list(director_list, directors);
+       
        
        //get each actor
        string actor_list;
        string unique_actor;
        getline(infile, actor_list); // actor list is now actor1, actor2, actor3...
-       for (int i = 0; i < actor_list.size(); i++)
-       {
-           if (actor_list[i] != ',')
-               unique_actor += actor_list[i];
-           
-           else
-           {
-               actors.push_back(unique_actor);
-               unique_actor = "";
-           }
-       }
+       load_list(actor_list, actors);
     
        //get each genre
        string genre_list;
        string unique_genre;
-       getline(infile, genre_list); // gnere list is now genre1, genre2, genre3...
-       for (int i = 0; i < genre_list.size(); i++)
-       {
-           if (genre_list[i] != ',')
-               unique_genre += genre_list[i];
-           
-           else
-           {
-               genres.push_back(unique_genre);
-               unique_genre = "";
-           }
-       }
+       getline(infile, genre_list); // gnere list is now genre1, genre2, genre3..
+       load_list(genre_list, genres);
        
        infile >> rating;
        infile.ignore(10000, '\n');
     
-       Movie* movie = new Movie(movie_id, release_year, title, directors, actors, genres, rating);
+       Movie* movie = new Movie(movie_id, title, release_year, directors, actors, genres, rating);
        m_movies.push_back(movie);
        m_movie_db_id.insert(movie_id, movie);
+       
        // insert into director, actor, genre tree
+       for (int i = 0; i < directors.size(); i++)
+       {
+           m_movie_db_dir.insert(directors[i],movie);
+       }
        
+       for (int i = 0; i < actors.size(); i++)
+       {
+           m_movie_db_actor.insert(actors[i],movie);
+       }
        
+       for (int i = 0; i < genres.size(); i++)
+       {
+           m_movie_db_genre.insert(genres[i],movie);
+       }
        directors.clear();
        actors.clear();
        genres.clear();
