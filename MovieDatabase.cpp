@@ -65,9 +65,7 @@ bool MovieDatabase::load(const string& filename)
        string director_list;
        string unique_dir;
        getline(infile, director_list); // director list is now dir1, dir2, dir3
-       
        load_list(director_list, directors);
-       
        
        //get each actor
        string actor_list;
@@ -88,7 +86,7 @@ bool MovieDatabase::load(const string& filename)
        m_movies.push_back(movie);
        m_movie_db_id.insert(movie_id, movie);
        
-       // insert into director, actor, genre tree
+       // insert movie into director, actor, genre tree
        for (int i = 0; i < directors.size(); i++)
        {
            m_movie_db_dir.insert(directors[i],movie);
@@ -113,7 +111,12 @@ bool MovieDatabase::load(const string& filename)
 
 Movie* MovieDatabase::get_movie_from_id(const string& id) const
 {
-    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_id.find(id);
+    string uppercase_id;
+    for (int i = 0; i < id.size(); i++)
+    {
+        uppercase_id += toupper(id[i]);
+    }
+    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_id.find(uppercase_id);
     if (it.is_valid())
     {
         return (it.get_value());
@@ -123,24 +126,50 @@ Movie* MovieDatabase::get_movie_from_id(const string& id) const
 
 vector<Movie*> MovieDatabase::get_movies_with_director(const string& director) const
 {
-//    TreeMultimap <std::vector<std::string>, Movie*>::Iterator it = m_movie_db_dir.find(director);
-//    if (it.is_valid())
-//    {
-//        return (it.get_value());
-//    }
-//    return nullptr;
+    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_dir.find(director);
+    if (it.is_valid())
+    {
+        vector<Movie*> temp;
+        while (it.is_valid()) {
+            temp.push_back(it.get_value());
+            it.advance();
+        }
+        return temp;
     
-     return vector<Movie*>();  // Replace this line with correct code.
+    }
+    return vector<Movie*>();  // Replace this line with correct code.
 }
 
 vector<Movie*> MovieDatabase::get_movies_with_actor(const string& actor) const
 {
-    return vector<Movie*>();  // Replace this line with correct code.
+    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_actor.find(actor);
+    if (it.is_valid())
+    {
+        vector<Movie*> temp;
+        while (it.is_valid()) {
+            temp.push_back(it.get_value());
+            it.advance();
+        }
+        return temp;
+    
+    }
+    return vector<Movie*>();
 }
 
 vector<Movie*> MovieDatabase::get_movies_with_genre(const string& genre) const
 {
-    return vector<Movie*>();  // Replace this line with correct code.
+    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_genre.find(genre);
+    if (it.is_valid())
+    {
+        vector<Movie*> temp;
+        while (it.is_valid()) {
+            temp.push_back(it.get_value());
+            it.advance();
+        }
+        return temp;
+    
+    }
+    return vector<Movie*>();
 }
 
 // MovieDatabase::~MovieDatabase() {}
