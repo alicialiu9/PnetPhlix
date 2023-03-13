@@ -15,7 +15,7 @@ void load_list(string list, vector<string>& v){
     for (int i = 0; i < list.size(); i++)
     {
         if (list[i] != ',')
-            temp += list[i];
+            temp += toupper(list[i]);
         
         else
         {
@@ -126,7 +126,13 @@ Movie* MovieDatabase::get_movie_from_id(const string& id) const
 
 vector<Movie*> MovieDatabase::get_movies_with_director(const string& director) const
 {
-    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_dir.find(director);
+    
+    string uppercase_dir;
+    for (int i = 0; i < director.size(); i++)
+    {
+        uppercase_dir += toupper(director[i]);
+    }
+    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_dir.find(uppercase_dir);
     if (it.is_valid())
     {
         vector<Movie*> temp;
@@ -142,7 +148,12 @@ vector<Movie*> MovieDatabase::get_movies_with_director(const string& director) c
 
 vector<Movie*> MovieDatabase::get_movies_with_actor(const string& actor) const
 {
-    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_actor.find(actor);
+    string uppercase_actor;
+    for (int i = 0; i < actor.size(); i++)
+    {
+        uppercase_actor += toupper(actor[i]);
+    }
+    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_actor.find(uppercase_actor);
     if (it.is_valid())
     {
         vector<Movie*> temp;
@@ -158,7 +169,12 @@ vector<Movie*> MovieDatabase::get_movies_with_actor(const string& actor) const
 
 vector<Movie*> MovieDatabase::get_movies_with_genre(const string& genre) const
 {
-    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_genre.find(genre);
+    string uppercase_genre;
+    for (int i = 0; i < genre.size(); i++)
+    {
+        uppercase_genre += toupper(genre[i]);
+    }
+    TreeMultimap <string, Movie*>::Iterator it = m_movie_db_genre.find(uppercase_genre);
     if (it.is_valid())
     {
         vector<Movie*> temp;
@@ -172,4 +188,11 @@ vector<Movie*> MovieDatabase::get_movies_with_genre(const string& genre) const
     return vector<Movie*>();
 }
 
-// MovieDatabase::~MovieDatabase() {}
+ MovieDatabase::~MovieDatabase()
+{
+ for (vector<Movie*>::iterator it = m_movies.begin(); it != m_movies.end(); it++)
+ {
+     delete *it;
+ }
+     
+}
