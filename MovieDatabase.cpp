@@ -15,7 +15,7 @@ void load_list(string list, vector<string>& v){
     for (int i = 0; i < list.size(); i++)
     {
         if (list[i] != ',')
-            temp += toupper(list[i]);
+            temp += list[i];
         
         else
         {
@@ -86,20 +86,35 @@ bool MovieDatabase::load(const string& filename)
        m_movies.push_back(movie);
        m_movie_db_id.insert(movie_id, movie);
        
-       // insert movie into director, actor, genre tree
+       // insert movie into director, actor, genre tree ; make uppercase
        for (int i = 0; i < directors.size(); i++)
        {
-           m_movie_db_dir.insert(directors[i],movie);
+           string temp;
+           for (int j = 0  ; j < directors[i].size(); j++)
+           {
+               temp += toupper(directors[i][j]);
+           }
+           m_movie_db_dir.insert(temp,movie);
        }
        
        for (int i = 0; i < actors.size(); i++)
        {
-           m_movie_db_actor.insert(actors[i],movie);
+           string temp;
+           for (int j = 0  ; j < actors[i].size(); j++)
+           {
+               temp += toupper(actors[i][j]);
+           }
+           m_movie_db_actor.insert(temp,movie);
        }
        
        for (int i = 0; i < genres.size(); i++)
        {
-           m_movie_db_genre.insert(genres[i],movie);
+           string temp;
+           for (int j = 0  ; j < genres[i].size(); j++)
+           {
+               temp += toupper(genres[i][j]);
+           }
+           m_movie_db_genre.insert(temp,movie);
        }
        directors.clear();
        actors.clear();
