@@ -37,10 +37,13 @@ public:
     };
 
     TreeMultimap() { m_root = nullptr;}
+
+    
     ~TreeMultimap()
     {
-        // delete all allocate new nodes
+        FreeTree (m_root);
     }
+    
 
     void insert(const KeyType& key, const ValueType& value)
     {
@@ -112,6 +115,18 @@ private:
    };
     
     Node *m_root;
+    
+    
+    void FreeTree(Node *cur)
+    {
+        if (cur == nullptr)
+        return;
+        
+        FreeTree(cur->left);
+        FreeTree (cur-> right);
+        
+        delete cur;
+    }
     
     
 };
